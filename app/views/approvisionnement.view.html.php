@@ -625,7 +625,7 @@
                           <?php foreach($dattas as $data): ?>
                             <tr>
                                 <td style="font-weight: 700;">
-                                    <?php echo $data['rfbl']; ?>
+                                    <?php echo $data['ref']; ?>
                                 </td>
 
                                 <td>
