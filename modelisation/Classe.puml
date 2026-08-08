@@ -1,0 +1,44 @@
+@startuml diagrammedeclasse
+
+class Fournisseur{
+    id
+    nom 
+    telephone 
+    adresse 
+
+}
+
+class Approvisionnement{
+    id
+    refBL 
+    date
+    
+}
+
+class Statut{
+    id 
+    nom 
+} 
+class Article{
+    id 
+    libelle 
+    prixAchat
+    qteStock
+
+}
+class LigneAppro{
+    id 
+    prixAchatReel
+    qteAppro
+    qteRecue
+}
+
+Article"1".."0..*"LigneAppro
+Approvisionnement"1".."0..*"LigneAppro
+Approvisionnement"0..*".."1"Fournisseur
+Approvisionnement"0..*".."1"Statut
+Fournisseur"1".."0..*"Article
+
+
+
+@enduml

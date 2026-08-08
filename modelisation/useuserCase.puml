@@ -1,0 +1,89 @@
+@startuml usecaseFournisseur 
+
+actor utilisateur as U
+
+left to right direction
+
+rectangle "Fournisseur"{
+    usecase "Lister produits en faible stock" as LPF 
+    usecase "lister Rapprochement entree" as LRE
+    usecase "lister approvisionnement" as LLL
+    usecase "enregistrer  approvisionnement" as EC
+    usecase "enregitrer fournisseur" as CF  
+    ' usecase "voir tout" as VT  
+    ' usecase "voir en cours" as VC
+    usecase "filtrer sur statut" as FT
+    usecase "filtrer sur Fournisseur" as FF
+    usecase "Voir articles d'un approvisionnement " as VA
+    usecase "receptionner approvisionnement " as RC
+    usecase "faire un approvisionnement sur un produit " as FA
+
+
+
+U --> LLL
+U --> LPF
+U --> LRE
+U --> EC
+U --> CF
+
+
+LLL <..FT:<<extend>>
+LLL <..FF:<<extend>>
+LLL <..VA:<<extend>>
+LLL <..RC:<<extend>>
+LPF <..FA:<<extend>>
+' LLL <..VC:<<extend>>
+' LLL <..VR:<<extend>>
+' LLL <..R:<<extend>>
+
+
+    
+
+
+    
+
+
+
+
+
+
+
+}
+
+
+' actor utilisateur as U
+' actor client as C
+
+' left to right direction                              
+
+' rectangle "gestionCommande"{
+'     usecase  "lister Commandes" as  lc 
+'     usecase  "lister StockCritique" as  lsc 
+'     usecase  "enregistrer Ventes" as  EV
+'     usecase  "enregistrer Articles" as  EA
+'     usecase  "enregistrer Client" as  EC
+'     usecase  "selection client Acheteur" as  SCA
+'     usecase  "selection article" as  SA
+'     usecase  "selection mode" as  SM
+'     usecase  "quantite par produit" as  QP  
+
+' }
+
+' U--> lc
+' U--> lsc
+' U--> EA
+' U--> EC
+' U--> EV
+
+' EV ..>SCA:<<include>>
+' EV ..>SA:<<include>>
+' EV ..>SM:<<include>>
+' EV <..QP:<<extend>>
+' U <|..C
+
+
+
+
+
+
+@enduml
