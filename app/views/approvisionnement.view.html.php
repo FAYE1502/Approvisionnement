@@ -597,7 +597,7 @@
                                 <?php endif; ?> 
                             </span>
                             </div>
-                            <button class="btn-quick-action" onclick="toggleOrderDraft('draft-3', 'Huile de palme 1L', 'SODIDA Distributeurs Réunis', 150)">Commander</button>
+                            <button class="btn-quick-action" onclick="toggleOrderDraft('draft-3', '<?php echo $niveau['libelle'];?>', '?<?php echo $niveau['nom'];?>', 150)">Commander</button>
                         </div>
                         <div class="order-draft-panel" id="draft-3">
                             <div style="font-weight: 700; margin-bottom: 6px; color: var(--accent);">Demande d'Approvisionnement Automatique</div>
