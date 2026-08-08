@@ -580,41 +580,22 @@
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
                         Générez instantanément des bons de commande pour vos fournisseurs pour les produits en alerte :
                     </p>
+                    <?php foreach($niveaus as $niveau): ?>
                     <div style="display: flex; flex-direction: column; gap: 14px;">
                         
                         <!-- Stock item 1 -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px;">
-                            <div>
-                                <div style="font-weight: 700; font-size: 13px;">Bidon d'huile 5L</div>
-                                <span style="font-size: 11px; color: var(--warning); font-weight: 700;">Alerte : 5 en stock</span>
-                            </div>
-                            <button class="btn-quick-action" onclick="toggleOrderDraft('draft-1', 'Bidon d\'huile 5L', 'Grossiste Diop & Frères', 50)">Commander</button>
-                        </div>
-                        <div class="order-draft-panel" id="draft-1">
-                            <div style="font-weight: 700; margin-bottom: 6px; color: var(--accent);">Demande d'Approvisionnement Automatique</div>
-                            <textarea class="draft-textarea" id="text-draft-1"></textarea>
-                            <button type="button" class="btn-quick-action" style="font-size: 10px; width: 100%; border-color: var(--success); color: var(--success);" onclick="copyDraft('text-draft-1')">Copier le bon de commande</button>
-                        </div>
-
-                        <!-- Stock item 2 -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px;">
-                            <div>
-                                <div style="font-weight: 700; font-size: 13px;">Carton de savon</div>
-                                <span style="font-size: 11px; color: var(--warning); font-weight: 700;">Alerte : 4 en stock</span>
-                            </div>
-                            <button class="btn-quick-action" onclick="toggleOrderDraft('draft-2', 'Carton de savon', 'Grossiste Diop & Frères', 100)">Commander</button>
-                        </div>
-                        <div class="order-draft-panel" id="draft-2">
-                            <div style="font-weight: 700; margin-bottom: 6px; color: var(--accent);">Demande d'Approvisionnement Automatique</div>
-                            <textarea class="draft-textarea" id="text-draft-2"></textarea>
-                            <button type="button" class="btn-quick-action" style="font-size: 10px; width: 100%; border-color: var(--success); color: var(--success);" onclick="copyDraft('text-draft-2')">Copier le bon de commande</button>
-                        </div>
+                    
 
                         <!-- Stock item 3 -->
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <div style="font-weight: 700; font-size: 13px;">Huile de palme 1L</div>
-                                <span style="font-size: 11px; color: var(--danger); font-weight: 700;">Rupture totale : 0 en stock</span>
+                                <div style="font-weight: 700; font-size: 13px;"><?php echo $niveau['libelle']; ?></div>
+                                <span style="font-size: 11px; color: var(--<?php echo $niveau['colors']; ?>); font-weight: 700;">
+                                    <?php if($niveau['qtestock']==0): ?>
+                                Rupture totale : 0 en stock
+                                <?php else: ?>Alert <?php echo $niveau['qtestock']?> en stock
+                                <?php endif; ?> 
+                            </span>
                             </div>
                             <button class="btn-quick-action" onclick="toggleOrderDraft('draft-3', 'Huile de palme 1L', 'SODIDA Distributeurs Réunis', 150)">Commander</button>
                         </div>
@@ -623,7 +604,7 @@
                             <textarea class="draft-textarea" id="text-draft-3"></textarea>
                             <button type="button" class="btn-quick-action" style="font-size: 10px; width: 100%; border-color: var(--success); color: var(--success);" onclick="copyDraft('text-draft-3')">Copier le bon de commande</button>
                         </div>
-
+                    <?php endforeach; ?>
                     </div>
                 </div>
 

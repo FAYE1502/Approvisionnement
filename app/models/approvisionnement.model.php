@@ -27,3 +27,20 @@ $pdo=null;
 return $dattas;
     
 }
+function getNiveauxStocksApprovisionnementDirect(int $max=5):array{
+    $pdo = connexionDB();
+    $sql = "SELECT 
+    a.libelle,f.nom,a.qteStock,
+CASE 
+    WHEN a.qteStock=0 THEN 'danger'
+    ELSE  'warning'
+END AS colors
+FROM articles a
+INNER JOIN fournisseurs f ON a.fournisseur_id = f.id
+WHERE qteStock <=:max
+ORDER BY a.libelle,a.qteStock DESC";
+
+$niveaus=executeQuery($pdo, $sql,['max'=>$max], false ); 
+$pdo=null;
+return $niveaus;
+}

@@ -32,7 +32,7 @@ function prepare(PDO $pdo,string $sql, array $datas) {
 }
 
 function executeQuery(PDO $pdo,string $sql, array $datas, bool $single = true) : array {
-    prepare($pdo, $sql,  $datas);
+   $statement = prepare($pdo, $sql,  $datas);
    
     return $single ? $statement->fetch():$statement->fetchAll();
 }
