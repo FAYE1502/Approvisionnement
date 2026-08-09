@@ -44,3 +44,54 @@ $niveaus = executeQuery($pdo, $sql,['max' => $max], false );
 $pdo = null;
 return $niveaus;
 }
+function BordereauxivraisonRéception():array{
+    $pdo = connexionDB();
+    $sql ="SELECT 
+    ap.id AS approvisionnement_id,
+    ap.rfBL,
+    CONCAT('#BL-0', ap.rfBL, ' • ', TO_CHAR(ap.date, 'DD MM YYYY')) AS reference_date,
+    f.nom ,
+  
+    COALESCE(SUM(l.prixAchatReel * l.qteAppro), 0) AS total_valeur,
+    
+    COUNT(l.id) AS nb_articles,
+   
+    CASE 
+        WHEN COALESCE(SUM(l.prixAchatReel * l.qteAppro), 0) = COALESCE(SUM(l.prixAchatReel * l.qteRecue), 0) THEN 'receptionne'
+        ELSE 'encours'
+    END AS status_code,
+
+    CASE 
+        WHEN COALESCE(SUM(l.prixAchatReel * l.qteAppro), 0) = COALESCE(SUM(l.prixAchatReel * l.qteRecue), 0) THEN 'RÉCEPTIONNÉ'
+        ELSE 'EN COURS'
+    END AS status_label
+
+FROM approvisionnements ap
+INNER JOIN fournisseurs f ON ap.fournisseur_id = f.id
+INNER JOIN ligneAppro l ON l.approvisionnement_id = ap.id
+GROUP BY ap.id, ap.rfBL, ap.date, f.nom
+ORDER BY ap.date DESC;";
+$borders = query($pdo,$sql, false) ?? [];
+
+$sql1 = "SELECT l.id,a.libelle,l.qteAppro,
+COALESCE(l.qteRecue,0) as qte_recue,
+COALESCE(l.prixAchatReel,0) as prixç_achat
+FROM ligneAppro l
+INNER JOIN articles a ON l.article_id=a.id
+WHERE l.approvisionnement_id = :approvisionnement_id";
+
+if (!empty($borders) && is_array($borders)) {
+        foreach ($borders as &$border) {
+            $border['details'] = executeQuery(
+                $pdo,
+                $sql1,
+                ['approvisionnement_id' => $border['approvisionnement_id']],
+                false
+            ) ?? [];
+        }
+    }
+
+$pdo = null;
+
+return $borders;
+}

@@ -478,20 +478,21 @@
 
                     <!-- Slips Container -->
                     <div id="slips-container">
-                        
-                        <!-- Slip Card 1 -->
-                        <div class="panel-card" style="padding: 20px; border-radius: 16px; margin-bottom: 16px; background: rgba(255,255,255,0.01);" data-supplier="CCS" data-ref="BL-CCS-098" data-status="receptionne">
+                    <?php foreach($borders as $border): ?>                        <!-- Slip Card 1 -->
+                        <div class="panel-card" style="padding: 20px; border-radius: 16px; margin-bottom: 16px; background: rgba(255,255,255,0.01);" data-supplier=<?php echo $border['nom']; ?>data-ref=<?php echo $border['rfbl']; ?> data-status="<?php echo $border['status_code']; ?>>
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                                 <div>
-                                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Réf: #BL-CCS-098 • 01 Août 2026</span>
-                                    <div style="font-size: 16px; font-weight: 700;">Comptoir Céréalier Sénégalais</div>
+                                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Réf: <?php echo $border['reference_date']; ?></span>
+                                    <div style="font-size: 16px; font-weight: 700;"><?php echo $border['nom']; ?></div>
                                 </div>
-                                <span class="badge payee" id="status-1">RÉCEPTIONNÉ</span>
+                                <span class="badge payee" id="<?= $border['status_code'] === 'receptionne' ? 'payee' : 'non-payee' ?>e' ?>">
+                                    <?php echo $border['status_label']; ?>
+                                </span>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-size: 18px; font-weight: 800; color: var(--accent);">4 200 000 FCFA</div>
+                                <div style="font-size: 18px; font-weight: 800; color: var(--accent);"><?php echo $border['total_valeur'],0, ',', ' '; ?></div>
                                 <div style="display: flex; gap: 8px;">
-                                    <button class="btn-quick-action" onclick="toggleDetails('details-1')">Voir articles (1)</button>
+                                    <button class="btn-quick-action" onclick="toggleDetails('details-<?php echo $border['reference_date']; ?>')">Voir articles (<?php echo $border['nb_articles']; ?>')</button>
                                 </div>
                             </div>
 
@@ -525,10 +526,12 @@
                                     <div style="font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 8px;">Lignes d'articles réceptionnés :</div>
                                     <div id="details-2-static-lines"></div>
                                 </div>
+                                
                                 <div id="details-2-editor">
                                     <div style="font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 12px;">Saisie des Quantités Reçues et Coûts Réels :</div>
                                     <div style="display: flex; flex-direction: column; gap: 10px;">
                                         <!-- Item 1 -->
+                                         <?php?>
                                         <div style="display: grid; grid-template-columns: 2fr 1fr 1.2fr; gap: 12px; align-items: center; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03);">
                                             <span style="font-weight:700; font-size:12px;">Bidon d'huile 5L (Attendu: 50)</span>
                                             <div>
@@ -564,7 +567,9 @@
                                                 <input type="number" id="recept-price-2-3" class="form-control" value="1200" style="padding:4px 8px; font-size:11px;">
                                             </div>
                                         </div>
+                                        
                                     </div>
+                                    <?php endforeach; ?>
                                     <button type="button" class="btn-submit btn-success" style="margin-top: 14px; padding: 10px 16px; font-size: 11px; width: auto;" onclick="validateReceptionComplex(2)">Confirmer et réceptionner les quantités saisies</button>
                                 </div>
                             </div>                          </div>
@@ -575,6 +580,7 @@
                 </div>
 
                 <!-- Out of stock triggers / Replenishment Mail draft -->
+                 
                 <div class="panel-card">
                     <div class="panel-title" style="border-left-color: var(--danger);">⚠️ Niveaux de Stocks & Approvisionnement direct</div>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">

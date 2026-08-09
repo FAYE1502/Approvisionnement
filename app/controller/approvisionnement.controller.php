@@ -4,6 +4,7 @@ function affichages(){
 
     $dattas = getRapprochementEntrer();
     $niveaus = getNiveauxStocksApprovisionnementDirect();
+    $borders = BordereauxivraisonRéception();
 
     // echo '<pre>';
     // var_dump($datas);
@@ -13,7 +14,8 @@ function affichages(){
 renderView("approvisionnement.view.html.php",
 [
     'dattas' => $dattas,
-    'niveaus' => $niveaus
+    'niveaus' => $niveaus,
+    'borders' => $borders
     ]
     );
 }
