@@ -96,13 +96,21 @@ $pdo = null;
 return $borders;
 }
 
-function enregistreEtAugmentationStock():int{
+
+
+function enregistreEtAugmentationStock():array{
     $pdo=$pdo = connexionDB();
-    $sql= "SELECT f.nom,a.libelle || ' ' || '(' || ' '  || a.prixAchat || ' ' || ')'
+    $sql= "SELECT a.id,f.id,f.nom,a.libelle || ' ' || '(' || ' '  || a.prixAchat || ' ' || ')' as produits,a.qteStock
 FROM fournisseurs f
 INNER JOIN articles a ON a.fournisseur_id=f.id
 ";
+$stocks = query($pdo,$sql,false);
+$pdo = null;
+return $stocks;
 }
+
+
+
 
 function EnregistrerFournisseur(array $datas):int {
     $pdo = connexionDB();
@@ -112,7 +120,7 @@ function EnregistrerFournisseur(array $datas):int {
     ";
     $fournisseurs = executeUpdate( $pdo, $sql,[
         'nom'=>$datas['nom'],
-    telephone=>$datas['telephone'],
+        telephone=>$datas['telephone'],
         'adresse'=>$datas['adresse']
     ]);
 }

@@ -11,6 +11,11 @@ switch ($uri) {
         
         affichages();
         break;
+            case '/enregistrement':
+        
+        augmentationStickt();
+
+        break;
     default:
         break;
 }
