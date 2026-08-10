@@ -440,7 +440,7 @@
                 <!-- Add Supplier Panel -->
                 <div class="panel-card" style="margin-top: 32px; margin-bottom: 0;">
                     <div class="panel-title">Enregistrer un Fournisseur</div>
-                    <form onsubmit="event.preventDefault(); alert('Fournisseur simulé enregistré avec succès !');">
+                    <form onsubmit="event.preventDefault(); alert('Fournisseur simulé enregistré avec succès !'); ">
                         <div class="form-group">
                             <label for="nom-fournisseur">Nom de l'Entreprise</label>
                             <input type="text" id="nom-fournisseur" class="form-control" placeholder="Ex: Comptoir Céréalier Sénégalais" required>
@@ -460,120 +460,377 @@
 
             <!-- Right Side: Complex Slips Table, Filters, Stock triggers -->
             <div>
-                <!-- Delivery Slips Registry with filters -->
-                <div class="panel-card" style="margin-bottom: 32px;">
-                    <div class="panel-title">Bordereaux de Livraison (Réceptions)</div>
-                    
-                    <!-- Advanced Filters & Search Ribbon -->
-                    <div class="filter-ribbon">
-                        <div class="search-bar">
-                            <input type="text" id="search-input" class="search-input" onkeyup="filterSlips()" placeholder="Rechercher par Fournisseur ou BL...">
+                ```php
+<div>
+    <!-- Delivery Slips Registry with filters -->
+    <div class="panel-card" style="margin-bottom: 32px;">
+
+        <div class="panel-title">
+            Bordereaux de Livraison (Réceptions)
+        </div>
+
+        <!-- Advanced Filters & Search Ribbon -->
+        <div class="filter-ribbon">
+
+            <div class="search-bar">
+                <input
+                    type="text"
+                    id="search-input"
+                    class="search-input"
+                    onkeyup="filterSlips()"
+                    placeholder="Rechercher par Fournisseur ou BL..."
+                >
+            </div>
+
+            <div class="filter-chips">
+                <span
+                    class="chip active"
+                    onclick="setFilter('tous', this)"
+                >
+                    Tout
+                </span>
+
+                <span
+                    class="chip"
+                    onclick="setFilter('encours', this)"
+                >
+                    En cours
+                </span>
+
+                <span
+                    class="chip"
+                    onclick="setFilter('receptionne', this)"
+                >
+                    Réceptionnés
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- Slips Container -->
+        <div id="slips-container">
+
+            <?php if (!empty($borders)): ?>
+
+                <?php foreach ($borders as $border): ?>
+
+                    <!-- Slip Card -->
+                    <div
+                        class="panel-card slip-card"
+                        style="
+                            padding: 20px;
+                            border-radius: 16px;
+                            margin-bottom: 16px;
+                            background: rgba(255,255,255,0.01);
+                        "
+                        data-supplier="<?php echo htmlspecialchars($border['nom']); ?>"
+                        data-ref="<?php echo htmlspecialchars($border['rfbl']); ?>"
+                        data-status="<?php echo htmlspecialchars($border['status_code']); ?>"
+                    >
+
+                        <!-- Header -->
+                        <div
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: flex-start;
+                                margin-bottom: 12px;
+                            "
+                        >
+
+                            <div>
+
+                                <span
+                                    style="
+                                        font-size: 11px;
+                                        color: var(--text-muted);
+                                        font-weight: 700;
+                                    "
+                                >
+                                    Réf:
+                                    <?php echo htmlspecialchars($border['reference_date']); ?>
+                                </span>
+
+                                <div
+                                    style="
+                                        font-size: 16px;
+                                        font-weight: 700;
+                                    "
+                                >
+                                    <?php echo htmlspecialchars($border['nom']); ?>
+                                </div>
+
+                            </div>
+
+
+                            <!-- Status -->
+                            <span
+                                class="badge <?php echo $border['status_code'] === 'receptionne'
+                                    ? 'payee'
+                                    : 'non-payee'; ?>"
+                            >
+                                <?php echo htmlspecialchars($border['status_label']); ?>
+                            </span>
+
                         </div>
-                        <div class="filter-chips">
-                            <span class="chip active" onclick="setFilter('tous', this)">Tout</span>
-                            <span class="chip" onclick="setFilter('encours', this)">En cours</span>
-                            <span class="chip" onclick="setFilter('receptionne', this)">Réceptionnés</span>
+
+
+                        <!-- Amount + Actions -->
+                        <div
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    font-size: 18px;
+                                    font-weight: 800;
+                                    color: var(--accent);
+                                "
+                            >
+                                <?php
+                                echo number_format(
+                                    (float) $border['total_valeur'],
+                                    0,
+                                    ',',
+                                    ' '
+                                );
+                                ?>
+                                FCFA
+                            </div>
+
+
+                            <div
+                                style="
+                                    display: flex;
+                                    gap: 8px;
+                                "
+                            >
+
+                                <!-- Voir articles -->
+                                <button
+                                    type="button"
+                                    class="btn-quick-action"
+                                    onclick="toggleDetails(
+                                        'details-<?php echo $border['approvisionnement_id']; ?>'
+                                    )"
+                                >
+                                    Voir articles
+                                    (<?php echo $border['nb_articles']; ?>)
+                                </button>
+
+
+                                <!-- Réceptionner -->
+                                <?php if ($border['status_code'] !== 'receptionne'): ?>
+
+                                    <button
+                                        type="button"
+                                        class="btn-quick-action"
+                                        style="
+                                            border-color: var(--success);
+                                            color: var(--success);
+                                        "
+                                        onclick="receptionSlip(
+                                            <?php echo $border['approvisionnement_id']; ?>
+                                        )"
+                                    >
+                                        Réceptionner
+                                    </button>
+
+                                <?php endif; ?>
+
+                            </div>
+
                         </div>
+
+
+                        <!-- Details Drawer -->
+                        <div
+                            class="details-drawer"
+                            id="details-<?php echo $border['approvisionnement_id']; ?>"
+                        >
+
+                            <div
+                                style="
+                                    font-weight: 700;
+                                    font-size: 12px;
+                                    color: var(--accent);
+                                    margin-bottom: 12px;
+                                "
+                            >
+                                Lignes d'articles reçus :
+                            </div>
+
+
+                            <?php if (!empty($border['details'])): ?>
+
+                                <div
+                                    style="
+                                        display: flex;
+                                        flex-direction: column;
+                                        gap: 10px;
+                                    "
+                                >
+
+                                    <?php foreach ($border['details'] as $detail): ?>
+
+                                        <div
+                                            style="
+                                                display: grid;
+                                                grid-template-columns: 2fr 1fr 1.2fr;
+                                                gap: 12px;
+                                                align-items: center;
+                                                padding-bottom: 8px;
+                                                border-bottom: 1px solid rgba(255,255,255,0.03);
+                                            "
+                                        >
+
+                                            <!-- Article -->
+                                            <span
+                                                style="
+                                                    font-weight: 700;
+                                                    font-size: 12px;
+                                                "
+                                            >
+                                                <?php echo htmlspecialchars($detail['libelle']); ?>
+
+                                                (Attendu :
+                                                <?php echo htmlspecialchars($detail['qteappro']); ?>)
+                                            </span>
+
+
+                                            <!-- Quantité reçue -->
+                                            <div>
+
+                                                <label
+                                                    style="
+                                                        font-size: 9px;
+                                                        color: var(--text-muted);
+                                                        display: block;
+                                                        margin-bottom: 2px;
+                                                    "
+                                                >
+                                                    Qté Reçue
+                                                </label>
+
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    id="qty-<?php echo $border['approvisionnement_id']; ?>-<?php echo $detail['id']; ?>"
+                                                    class="form-control"
+                                                    value="<?php
+                                                        echo $detail['qte_recue'] > 0
+                                                            ? $detail['qte_recue']
+                                                            : $detail['qteappro'];
+                                                    ?>"
+                                                    style="
+                                                        padding: 4px 8px;
+                                                        font-size: 11px;
+                                                    "
+                                                >
+
+                                            </div>
+
+
+                                            <!-- Prix achat -->
+                                            <div>
+
+                                                <label
+                                                    style="
+                                                        font-size: 9px;
+                                                        color: var(--text-muted);
+                                                        display: block;
+                                                        margin-bottom: 2px;
+                                                    "
+                                                >
+                                                    Coût Achat (F)
+                                                </label>
+
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    id="price-<?php echo $border['approvisionnement_id']; ?>-<?php echo $detail['id']; ?>"
+                                                    class="form-control"
+                                                    value="<?php echo htmlspecialchars($detail['prix_achat']); ?>"
+                                                    style="
+                                                        padding: 4px 8px;
+                                                        font-size: 11px;
+                                                    "
+                                                >
+
+                                            </div>
+
+                                        </div>
+
+                                    <?php endforeach; ?>
+
+                                </div>
+
+                            <?php else: ?>
+
+                                <div
+                                    style="
+                                        font-size: 12px;
+                                        color: var(--text-muted);
+                                    "
+                                >
+                                    Aucun article trouvé pour ce bordereau.
+                                </div>
+
+                            <?php endif; ?>
+
+
+                            <!-- Confirmation -->
+                            <?php if ($border['status_code'] !== 'receptionne'): ?>
+
+                                <button
+                                    type="button"
+                                    class="btn-submit btn-success"
+                                    style="
+                                        margin-top: 14px;
+                                        padding: 10px 16px;
+                                        font-size: 11px;
+                                        width: auto;
+                                    "
+                                    onclick="validateReceptionComplex(
+                                        <?php echo $border['approvisionnement_id']; ?>
+                                    )"
+                                >
+                                    Confirmer et réceptionner les quantités saisies
+                                </button>
+
+                            <?php endif; ?>
+
+                        </div>
+
                     </div>
 
-                    <!-- Slips Container -->
-                    <div id="slips-container">
-                    <?php foreach($borders as $border): ?>                        <!-- Slip Card 1 -->
-                        <div class="panel-card" style="padding: 20px; border-radius: 16px; margin-bottom: 16px; background: rgba(255,255,255,0.01);" data-supplier=<?php echo $border['nom']; ?>data-ref=<?php echo $border['rfbl']; ?> data-status="<?php echo $border['status_code']; ?>>
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                                <div>
-                                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Réf: <?php echo $border['reference_date']; ?></span>
-                                    <div style="font-size: 16px; font-weight: 700;"><?php echo $border['nom']; ?></div>
-                                </div>
-                                <span class="badge payee" id="<?= $border['status_code'] === 'receptionne' ? 'payee' : 'non-payee' ?>e' ?>">
-                                    <?php echo $border['status_label']; ?>
-                                </span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-size: 18px; font-weight: 800; color: var(--accent);"><?php echo $border['total_valeur'],0, ',', ' '; ?></div>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn-quick-action" onclick="toggleDetails('details-<?php echo $border['reference_date']; ?>')">Voir articles (<?php echo $border['nb_articles']; ?>')</button>
-                                </div>
-                            </div>
+                <?php endforeach; ?>
 
-                            <!-- Drawer -->
-                            <div class="details-drawer" id="details-1">
-                                <div style="font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 8px;">Lignes d'articles reçus :</div>
-                                <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted);">
-                                    <span>200x Sac de riz 50kg (achat à 21 000 F/u)</span>
-                                    <span style="font-weight: 700; color: var(--text-main);">4 200 000 F</span>
-                                </div>
-                            </div>
-                        </div>
+            <?php else: ?>
 
-                        <!-- Slip Card 2 -->
-                        <div class="panel-card" style="padding: 20px; border-radius: 16px; margin-bottom: 16px; background: rgba(255,255,255,0.01);" data-supplier="Grossiste Alimentaire Diop" data-ref="BL-DIP-012" data-status="encours">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                                <div>
-                                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Réf: #BL-DIP-012 • 05 Août 2026</span>
-                                    <div style="font-size: 16px; font-weight: 700;">Grossiste Diop & Frères</div>
-                                </div>
-                                <span class="badge non-payee" id="status-2">EN COURS</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-size: 18px; font-weight: 800; color: var(--accent);">775 000 FCFA</div>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn-quick-action" onclick="toggleDetails('details-2')">Voir articles (3)</button>
-                                    <button class="btn-quick-action" style="border-color: var(--success); color: var(--success);" id="btn-receptive-2" onclick="receptionSlip(2)">Réceptionner</button>
-                                        <!-- Drawer (Interactive Editor) -->
-                            <div class="details-drawer" id="details-2">
-                                <div id="details-2-static" style="display: none;">
-                                    <div style="font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 8px;">Lignes d'articles réceptionnés :</div>
-                                    <div id="details-2-static-lines"></div>
-                                </div>
-                                
-                                <div id="details-2-editor">
-                                    <div style="font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 12px;">Saisie des Quantités Reçues et Coûts Réels :</div>
-                                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                                        <!-- Item 1 -->
-                                         <?php?>
-                                        <div style="display: grid; grid-template-columns: 2fr 1fr 1.2fr; gap: 12px; align-items: center; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <span style="font-weight:700; font-size:12px;">Bidon d'huile 5L (Attendu: 50)</span>
-                                            <div>
-                                                <label style="font-size:9px; color:var(--text-muted); display:block; margin-bottom:2px;">Qté Reçue</label>
-                                                <input type="number" id="recept-qty-2-1" class="form-control" value="50" style="padding:4px 8px; font-size:11px;">
-                                            </div>
-                                            <div>
-                                                <label style="font-size:9px; color:var(--text-muted); display:block; margin-bottom:2px;">Coût Achat (F)</label>
-                                                <input type="number" id="recept-price-2-1" class="form-control" value="6500" style="padding:4px 8px; font-size:11px;">
-                                            </div>
-                                        </div>
-                                        <!-- Item 2 -->
-                                        <div style="display: grid; grid-template-columns: 2fr 1fr 1.2fr; gap: 12px; align-items: center; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <span style="font-weight:700; font-size:12px;">Carton de savon (Attendu: 30)</span>
-                                            <div>
-                                                <label style="font-size:9px; color:var(--text-muted); display:block; margin-bottom:2px;">Qté Reçue</label>
-                                                <input type="number" id="recept-qty-2-2" class="form-control" value="30" style="padding:4px 8px; font-size:11px;">
-                                            </div>
-                                            <div>
-                                                <label style="font-size:9px; color:var(--text-muted); display:block; margin-bottom:2px;">Coût Achat (F)</label>
-                                                <input type="number" id="recept-price-2-2" class="form-control" value="9500" style="padding:4px 8px; font-size:11px;">
-                                            </div>
-                                        </div>
-                                        <!-- Item 3 -->
-                                        <div style="display: grid; grid-template-columns: 2fr 1fr 1.2fr; gap: 12px; align-items: center; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <span style="font-weight:700; font-size:12px;">Paquet de sucre (Attendu: 137)</span>
-                                            <div>
-                                                <label style="font-size:9px; color:var(--text-muted); display:block; margin-bottom:2px;">Qté Reçue</label>
-                                                <input type="number" id="recept-qty-2-3" class="form-control" value="137" style="padding:4px 8px; font-size:11px;">
-                                            </div>
-                                            <div>
-                                                <label style="font-size:9px; color:var(--text-muted); display:block; margin-bottom:2px;">Coût Achat (F)</label>
-                                                <input type="number" id="recept-price-2-3" class="form-control" value="1200" style="padding:4px 8px; font-size:11px;">
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
-                                    <?php endforeach; ?>
-                                    <button type="button" class="btn-submit btn-success" style="margin-top: 14px; padding: 10px 16px; font-size: 11px; width: auto;" onclick="validateReceptionComplex(2)">Confirmer et réceptionner les quantités saisies</button>
-                                </div>
-                            </div>                          </div>
-                            </div>
+                <div
+                    style="
+                        padding: 20px;
+                        text-align: center;
+                        color: var(--text-muted);
+                    "
+                >
+                    Aucun bordereau de livraison trouvé.
+                </div>
+
+            <?php endif; ?>
+
+        </div>
+
+    </div>
+</div>
+```
+
                         </div>
 
                     </div>

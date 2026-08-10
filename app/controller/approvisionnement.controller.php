@@ -24,4 +24,6 @@ function renderView(string $file,array $datas){
     extract($datas);
     require_once dirname(__DIR__) . "/views/$file";
 }
-
+ function enregistrement(){
+    if($_SERVER['REQUEST_METHODE']===$_POST && !isset($_POST['action_']));
+ }

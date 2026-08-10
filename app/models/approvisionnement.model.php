@@ -75,7 +75,7 @@ $borders = query($pdo,$sql, false) ?? [];
 
 $sql1 = "SELECT l.id,a.libelle,l.qteAppro,
 COALESCE(l.qteRecue,0) as qte_recue,
-COALESCE(l.prixAchatReel,0) as prixç_achat
+COALESCE(l.prixAchatReel,0) as prix_achat
 FROM ligneAppro l
 INNER JOIN articles a ON l.article_id=a.id
 WHERE l.approvisionnement_id = :approvisionnement_id";
@@ -94,4 +94,25 @@ if (!empty($borders) && is_array($borders)) {
 $pdo = null;
 
 return $borders;
+}
+
+function enregistreEtAugmentationStock():int{
+    $pdo=$pdo = connexionDB();
+    $sql= "SELECT f.nom,a.libelle || ' ' || '(' || ' '  || a.prixAchat || ' ' || ')'
+FROM fournisseurs f
+INNER JOIN articles a ON a.fournisseur_id=f.id
+";
+}
+
+function EnregistrerFournisseur(array $datas):int {
+    $pdo = connexionDB();
+    $sql="INSERT INTO fournisseurs(nom,telephone,adresse)
+    VALUES
+    (':nom',':telephone',':adresse')
+    ";
+    $fournisseurs = executeUpdate( $pdo, $sql,[
+        'nom'=>$datas['nom'],
+    telephone=>$datas['telephone'],
+        'adresse'=>$datas['adresse']
+    ]);
 }
